@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING_PAYMENT
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  WAITING_PAYMENT
+  WAITING_VERIFY
+  PAID
+  REJECTED
+  CANCELLED
+}
+
+model User {
+  id          String   @id @default(cuid())
+  lineUserId String   @unique
+  displayName String
+  pictureUrl String?
+  role        UserRole @default(USER)
+
+  bookings Booking[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([lineUserId])
+}
+
+model Booking {
+  id               String        @id @default(cuid())
+  bookingCode      String        @unique
+  paymentReference String        @unique
+  pinCode          String
+
+  lineUserId       String?
+  userId           String?
+  user             User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  customerName     String
+  customerEmail    String
+  customerPhone    String
+  customerContact  String?
+
+  status           BookingStatus @default(PENDING_PAYMENT)
+  finalAmount      Int
+  nights           Int
+  totalRooms       Int
+  totalGuests      Int
+
+  checkIn          DateTime?
+  checkOut         DateTime?
+
+  paymentMethod    String        @default("BANK_TRANSFER")
+  paymentStatus    PaymentStatus @default(WAITING_PAYMENT)
+  transferReference String?
+  slipFileName     String?
+  slipUrl          String?
+  paymentExpireAt  DateTime?
+
+  items            BookingItem[]
+  guests           BookingGuest[]
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([lineUserId])
+  @@index([userId])
+  @@index([bookingCode])
+  @@index([paymentReference])
+}
+
+model BookingItem {
+  id          String @id @default(cuid())
+  bookingId  String
+  booking    Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  roomName    String
+  dealTitle   String
+  quantity    Int
+  price       Int
+  adults      Int
+  children    Int
+  totalGuests Int
+  note        String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BookingGuest {
+  id             String @id @default(cuid())
+  bookingId      String
+  booking        Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  roomCartId     String?
+  guestName      String
+  nationality    String?
+  bedType        String?
+  arrivalTime    String?
+  note           String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

@@ -1,0 +1,496 @@
+@import "tailwindcss";
+
+/* =========================
+   CampStay Global Theme
+   ========================= */
+
+:root {
+  --camp-bg: #f7f1e7;
+  --camp-bg-soft: #fff8ec;
+  --camp-green: #1f3d2b;
+  --camp-green-dark: #122018;
+  --camp-green-soft: #2e5a3f;
+  --camp-brown: #8b5e34;
+  --camp-orange: #e97732;
+  --camp-orange-soft: #fff1e6;
+  --camp-cream: #fff8ec;
+  --camp-dark: #111827;
+  --camp-muted: #64748b;
+  --camp-border: #e5e7eb;
+  --camp-card: #ffffff;
+}
+
+/* =========================
+   Base Reset
+   ========================= */
+
+* {
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--camp-bg);
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  max-width: 100%;
+  overflow-x: hidden;
+  background:
+    radial-gradient(circle at top left, rgba(233, 119, 50, 0.1), transparent 32%),
+    radial-gradient(circle at top right, rgba(31, 61, 43, 0.12), transparent 35%),
+    var(--camp-bg);
+  color: var(--camp-dark);
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+input,
+select,
+textarea {
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+::selection {
+  background: var(--camp-orange);
+  color: white;
+}
+
+/* =========================
+   Layout Helpers
+   ========================= */
+
+.camp-container {
+  width: min(1180px, calc(100% - 32px));
+  margin-inline: auto;
+}
+
+.mobile-safe-area {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+@media (min-width: 768px) {
+  .camp-container {
+    width: min(1180px, calc(100% - 48px));
+  }
+}
+
+@media (min-width: 1280px) {
+  .camp-container {
+    width: min(1220px, calc(100% - 64px));
+  }
+}
+
+/* =========================
+   Global Cards / Effects
+   ========================= */
+
+.glass-card {
+  background: rgba(255, 248, 236, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  box-shadow: 0 24px 80px rgba(31, 61, 43, 0.16);
+  backdrop-filter: blur(18px);
+}
+
+.camp-gradient {
+  background:
+    radial-gradient(circle at 10% 10%, rgba(233, 119, 50, 0.16), transparent 32%),
+    radial-gradient(circle at 90% 10%, rgba(31, 61, 43, 0.2), transparent 34%),
+    linear-gradient(135deg, #fff8ec 0%, #f7f1e7 44%, #efe3cf 100%);
+}
+
+.hero-overlay {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(17, 24, 39, 0.84),
+      rgba(17, 24, 39, 0.42),
+      rgba(17, 24, 39, 0.12)
+    ),
+    linear-gradient(
+      180deg,
+      rgba(17, 24, 39, 0.1),
+      rgba(17, 24, 39, 0.76)
+    );
+}
+
+.soft-shadow {
+  box-shadow: 0 20px 60px rgba(31, 61, 43, 0.12);
+}
+
+.deep-shadow {
+  box-shadow: 0 30px 90px rgba(15, 23, 42, 0.18);
+}
+
+/* =========================
+   Scrollbar
+   ========================= */
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  scrollbar-width: none;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f3eadc;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c8b89f;
+  border-radius: 999px;
+  border: 2px solid #f3eadc;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a99578;
+}
+
+/* =========================
+   Forms
+   ========================= */
+
+.form-input {
+  width: 100%;
+  border-radius: 18px;
+  border: 1px solid #cbd5e1;
+  background: white;
+  padding: 13px 16px;
+  font-weight: 800;
+  color: #1f3d2b;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.form-input:focus {
+  border-color: #e97732;
+  box-shadow: 0 0 0 4px rgba(233, 119, 50, 0.13);
+}
+
+.form-input::placeholder {
+  color: #cbd5e1;
+}
+
+.form-input:disabled {
+  background: #f1f5f9;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+select.form-input {
+  padding-right: 44px;
+}
+
+/* =========================
+   Booking Table Helpers
+   ========================= */
+
+.booking-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.booking-table th,
+.booking-table td {
+  border: 1px solid #e5e7eb;
+  padding: 14px 16px;
+}
+
+.booking-table th {
+  background: #f8fafc;
+  font-weight: 900;
+  color: #1f3d2b;
+}
+
+.booking-table td {
+  background: white;
+}
+
+/* =========================
+   Utility Classes
+   ========================= */
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+/* =========================
+   Animations
+   ========================= */
+
+@keyframes floatCamp {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-14px) rotate(2deg);
+  }
+
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+}
+
+.float-camp {
+  animation: floatCamp 5s ease-in-out infinite;
+}
+
+@keyframes pulseSoft {
+  0% {
+    box-shadow: 0 0 0 0 rgba(233, 119, 50, 0.3);
+  }
+
+  70% {
+    box-shadow: 0 0 0 14px rgba(233, 119, 50, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(233, 119, 50, 0);
+  }
+}
+
+.pulse-soft {
+  animation: pulseSoft 2.2s infinite;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-up {
+  animation: fadeUp 0.45s ease both;
+}
+
+@keyframes mobileMenuIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes profilePopupIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes softBreathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.025);
+  }
+}
+
+.soft-breathe {
+  animation: softBreathe 4.5s ease-in-out infinite;
+}
+
+@keyframes campShimmer {
+  0% {
+    transform: translateX(-120%);
+  }
+
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+.camp-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.camp-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.42) 45%,
+    transparent 70%
+  );
+  transform: translateX(-120%);
+  animation: campShimmer 3.8s ease-in-out infinite;
+}
+
+.tap-card {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transform: translateZ(0);
+}
+
+.tap-card:active {
+  transform: scale(0.98);
+}
+
+.lift-card {
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    border-color 0.22s ease;
+}
+
+.lift-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 22px 58px rgba(15, 23, 42, 0.12);
+}
+
+.mobile-slide-panel {
+  animation: mobileMenuIn 0.22s ease-out both;
+}
+
+/* =========================
+   Date / Time / File Input Fixes
+   ========================= */
+
+input[type="date"] {
+  color-scheme: light;
+}
+
+input[type="file"] {
+  cursor: pointer;
+}
+
+pre,
+code {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* =========================
+   Next.js Dev Overlay Safe
+   ========================= */
+
+nextjs-portal {
+  color-scheme: dark;
+}
+
+/* =========================
+   Mobile Fixes
+   ========================= */
+
+@media (max-width: 640px) {
+  body {
+    background:
+      radial-gradient(circle at top left, rgba(233, 119, 50, 0.08), transparent 34%),
+      var(--camp-bg);
+  }
+
+  .camp-container {
+    width: min(100% - 24px, 1180px);
+  }
+
+  .form-input {
+    border-radius: 16px;
+    padding: 12px 14px;
+  }
+
+  .fade-up {
+    animation-duration: 0.32s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+}
