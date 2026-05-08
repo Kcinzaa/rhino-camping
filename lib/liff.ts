@@ -6,6 +6,8 @@ export type LineProfile = {
 };
 
 const LIFF_LOGIN_STARTED_KEY = "rhino_liff_login_started";
+const LIFF_LOGIN_ATTEMPTED_KEY = "rhino_liff_login_attempted";
+const LOGIN_ATTEMPT_TTL_MS = 1000 * 60 * 5;
 
 function getDevProfile(): LineProfile {
   const devUserId =
@@ -74,6 +76,27 @@ function clearLiffCallbackParams() {
   }
 }
 
+function getLoginAttemptedAt() {
+  return Number(
+    window.sessionStorage.getItem(LIFF_LOGIN_ATTEMPTED_KEY) ||
+      window.localStorage.getItem(LIFF_LOGIN_ATTEMPTED_KEY) ||
+      0
+  );
+}
+
+function markLoginAttempted() {
+  const value = String(Date.now());
+  window.sessionStorage.setItem(LIFF_LOGIN_STARTED_KEY, value);
+  window.sessionStorage.setItem(LIFF_LOGIN_ATTEMPTED_KEY, value);
+  window.localStorage.setItem(LIFF_LOGIN_ATTEMPTED_KEY, value);
+}
+
+function clearLoginAttempted() {
+  window.sessionStorage.removeItem(LIFF_LOGIN_STARTED_KEY);
+  window.sessionStorage.removeItem(LIFF_LOGIN_ATTEMPTED_KEY);
+  window.localStorage.removeItem(LIFF_LOGIN_ATTEMPTED_KEY);
+}
+
 export async function getLiffProfile(): Promise<LineProfile> {
   try {
     const liffId = process.env.NEXT_PUBLIC_LIFF_ID?.trim();
@@ -103,14 +126,17 @@ export async function getLiffProfile(): Promise<LineProfile> {
         window.sessionStorage.getItem(LIFF_LOGIN_STARTED_KEY) || 0
       );
       const loginRecentlyStarted = Date.now() - loginStartedAt < 10000;
+      const loginAttemptedAt = getLoginAttemptedAt();
+      const loginAttemptRecentlyFailed =
+        Date.now() - loginAttemptedAt < LOGIN_ATTEMPT_TTL_MS;
 
-      if (loginRecentlyStarted) {
+      if (loginRecentlyStarted || loginAttemptRecentlyFailed) {
         throw new Error(
           "กำลังรอการยืนยันตัวตนจาก LINE กรุณากลับมาที่หน้านี้อีกครั้ง"
         );
       }
 
-      window.sessionStorage.setItem(LIFF_LOGIN_STARTED_KEY, String(Date.now()));
+      markLoginAttempted();
       liff.login({
         redirectUri: getCleanRedirectUri(),
       });
@@ -122,7 +148,7 @@ export async function getLiffProfile(): Promise<LineProfile> {
       return getDevProfile();
     }
 
-    window.sessionStorage.removeItem(LIFF_LOGIN_STARTED_KEY);
+    clearLoginAttempted();
     clearLiffCallbackParams();
 
     const profile = await liff.getProfile();

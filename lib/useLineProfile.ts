@@ -1,16 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getLiffProfile, type LineProfile } from "@/lib/liff";
+import {
+  getLineProfile,
+  type LineProfile as BaseLineProfile,
+} from "@/lib/line-profile";
 
 type UserRole = "CUSTOMER" | "ADMIN";
 
-type LineProfileWithRole = LineProfile & {
+type LineProfileWithRole = Omit<BaseLineProfile, "role"> & {
   role?: UserRole;
   isAdmin?: boolean;
 };
 
-function getProfileWithRole(profile: LineProfile): LineProfileWithRole {
+function getProfileWithRole(profile: BaseLineProfile): LineProfileWithRole {
   const adminLineUserIds = (
     process.env.NEXT_PUBLIC_ADMIN_LINE_USER_IDS || "test-line-admin-001"
   )
@@ -42,7 +45,7 @@ export function useLineProfile() {
         setLoading(true);
         setError("");
 
-        const lineProfile = await getLiffProfile();
+        const lineProfile = await getLineProfile();
 
         if (!lineProfile) {
           setProfile(null);

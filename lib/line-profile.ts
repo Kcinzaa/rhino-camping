@@ -68,7 +68,7 @@ export function getSavedLineProfile(): LineProfile | null {
 export async function getLineProfile(): Promise<LineProfile> {
   const saved = getSavedLineProfile();
 
-  if (saved && shouldUseDevLine()) {
+  if (saved) {
     return saved;
   }
 
