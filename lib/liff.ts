@@ -5,6 +5,8 @@ export type LineProfile = {
   isDevMode?: boolean;
 };
 
+const LIFF_LOGIN_STARTED_KEY = "rhino_liff_login_started";
+
 function getDevProfile(): LineProfile {
   const devUserId =
     process.env.NEXT_PUBLIC_DEV_LINE_USER_ID || "test-line-user-001";
@@ -32,11 +34,51 @@ function getLiffRequiredError() {
   );
 }
 
+function getCleanRedirectUri() {
+  const url = new URL(window.location.href);
+
+  url.hash = "";
+  url.searchParams.delete("liff.state");
+  url.searchParams.delete("code");
+  url.searchParams.delete("state");
+  url.searchParams.delete("friendship_status_changed");
+
+  return url.toString();
+}
+
+function clearLiffCallbackParams() {
+  const url = new URL(window.location.href);
+  const callbackKeys = [
+    "liff.state",
+    "code",
+    "state",
+    "friendship_status_changed",
+  ];
+
+  let changed = false;
+
+  for (const key of callbackKeys) {
+    if (url.searchParams.has(key)) {
+      url.searchParams.delete(key);
+      changed = true;
+    }
+  }
+
+  if (url.hash) {
+    url.hash = "";
+    changed = true;
+  }
+
+  if (changed) {
+    window.history.replaceState(null, "", url.toString());
+  }
+}
+
 export async function getLiffProfile(): Promise<LineProfile> {
   try {
-    const liffId = process.env.NEXT_PUBLIC_LIFF_ID;
+    const liffId = process.env.NEXT_PUBLIC_LIFF_ID?.trim();
 
-    if (!liffId || liffId.trim() === "") {
+    if (!liffId) {
       if (!canUseDevProfile()) {
         throw getLiffRequiredError();
       }
@@ -54,13 +96,23 @@ export async function getLiffProfile(): Promise<LineProfile> {
 
     const liff = (await import("@line/liff")).default;
 
-    await liff.init({
-      liffId,
-    });
+    await liff.init({ liffId });
 
     if (!liff.isLoggedIn()) {
+      const loginStartedAt = Number(
+        window.sessionStorage.getItem(LIFF_LOGIN_STARTED_KEY) || 0
+      );
+      const loginRecentlyStarted = Date.now() - loginStartedAt < 10000;
+
+      if (loginRecentlyStarted) {
+        throw new Error(
+          "กำลังรอการยืนยันตัวตนจาก LINE กรุณากลับมาที่หน้านี้อีกครั้ง"
+        );
+      }
+
+      window.sessionStorage.setItem(LIFF_LOGIN_STARTED_KEY, String(Date.now()));
       liff.login({
-        redirectUri: `${window.location.origin}/booking`,
+        redirectUri: getCleanRedirectUri(),
       });
 
       if (!canUseDevProfile()) {
@@ -69,6 +121,9 @@ export async function getLiffProfile(): Promise<LineProfile> {
 
       return getDevProfile();
     }
+
+    window.sessionStorage.removeItem(LIFF_LOGIN_STARTED_KEY);
+    clearLiffCallbackParams();
 
     const profile = await liff.getProfile();
 
